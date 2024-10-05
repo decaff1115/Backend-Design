@@ -1,3 +1,6 @@
-const users = [];
+let users = [];
 
-module.exports = {users};
+const getUsers = () => users;
+const saveUsers = (newUsers) => {users = newUsers};
+
+module.exports = {getUsers, saveUsers};
