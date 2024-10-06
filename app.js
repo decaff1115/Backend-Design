@@ -1,11 +1,14 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const userRoutes = require('./routes/user');
-const { authenticateToken, limiter, requestLogger } = require('./middleware/authMiddleware'); // Adjust the path
+const { limiter, requestLogger } = require('./middleware/authMiddleware'); // Import middleware without authenticateToken
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const tokenSecret = process.env.TOKEN_SECRET;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -17,8 +20,8 @@ app.use(requestLogger);
 // Apply rate limiter to all requests
 app.use(limiter);
 
-// Use authentication middleware on user routes
-app.use('/api/users', authenticateToken, userRoutes);
+// Use user routes
+app.use('/api/users', userRoutes); // The routes already handle authentication where needed
 
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);

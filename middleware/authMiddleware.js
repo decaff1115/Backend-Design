@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
+require('dotenv').config(); 
+const tokenSecret = process.env.TOKEN_SECRET;
 
 // Rate limiter configuration
 const limiter = rateLimit({
@@ -11,7 +13,7 @@ const limiter = rateLimit({
 // Request logger middleware
 function requestLogger(req, res, next) {
     console.log(`${req.method} ${req.originalUrl} - ${new Date().toISOString()}`);
-    next(); // Proceed to the next route handler
+    next();
 }
 
 // Authentication middleware
@@ -20,16 +22,16 @@ function authenticateToken(req, res, next) {
 
     if (!token) return res.sendStatus(403); // No token, Forbidden
 
-    jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+    jwt.verify(token, process.env.TOKEN_SECRET || 'secret_key', (err, user) => {
         if (err) return res.sendStatus(403); // Token invalid, Forbidden
         req.user = user; // Add user info to request
-        next(); 
+        next();
     });
 }
-
 
 module.exports = {
     authenticateToken,
     limiter,
-    requestLogger
+    requestLogger,
 };
+
